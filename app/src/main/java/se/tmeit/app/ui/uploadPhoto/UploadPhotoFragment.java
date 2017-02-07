@@ -36,6 +36,7 @@ public final class UploadPhotoFragment extends Fragment implements MainActivity.
 	private static final String STATE_PENDING_IMAGE_CAPTURE_URI = "uploadPhotoPendingCaptureUri";
 	private static final String STATE_PENDING_IMAGE_CROP_URI = "uploadPhotoPendingCropUri";
 	private static final String TAG = UploadPhotoFragment.class.getSimpleName();
+	public static final String PHOTO = "photo";
 	private Uri mPendingCaptureUri;
 	private Uri mPendingCropUri;
 
@@ -81,6 +82,16 @@ public final class UploadPhotoFragment extends Fragment implements MainActivity.
 		if (null != savedInstanceState && savedInstanceState.containsKey(STATE_PENDING_IMAGE_CROP_URI)) {
 			mPendingCropUri = Uri.parse(savedInstanceState.getString(STATE_PENDING_IMAGE_CROP_URI));
 			Log.d(TAG, "Pending crop uri = \"" + mPendingCropUri + "\".");
+		}
+
+		Bundle bundle = getArguments();
+		if(bundle != null)
+		{
+			String strtext = getArguments().getString(PHOTO);
+
+			Intent intent = new Intent();
+			intent.setData(Uri.parse(strtext));
+			handleUploadPhotoActivityResult(ACTIVITY_RESULT_SELECT_EXISTING, intent);
 		}
 
 		Button takePhotoButton = (Button) view.findViewById(R.id.upload_photo_use_camera);
