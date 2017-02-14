@@ -16,6 +16,7 @@
 
 package se.tmeit.app.ui.cropPhoto;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,6 +27,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -39,6 +41,7 @@ import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 
 import se.tmeit.app.R;
+import se.tmeit.app.utils.ImageUtils;
 
 /*
  * Modified from original in AOSP.
@@ -49,8 +52,12 @@ public final class CropImageActivity extends MonitoredActivity {
 	public static final String EXTRA_ERROR = "error";
 	public static final String EXTRA_MAX_X = "max_x";
 	public static final String EXTRA_MAX_Y = "max_y";
+	public static final String INTENT_SOURCE = "intent_source";
 	public static final int RESULT_ERROR = 404;
 	private static final String TAG = CropImageActivity.class.getSimpleName();
+	public static final int BASE_OUTPUT_HEIGHT = 120;
+	public static final int BASE_OUTPUT_WIDTH = 110;
+	public static final int OUTPUT_SCALE_FACTOR = 4;
 	private final Handler mHandler = new Handler();
 	private int mAspectX;
 	private int mAspectY;
@@ -299,15 +306,47 @@ public final class CropImageActivity extends MonitoredActivity {
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
 
+
+		/*cropIntent.putExtra(CropImageActivity.EXTRA_ASPECT_X, BASE_OUTPUT_WIDTH);
+			cropIntent.putExtra(CropImageActivity.EXTRA_ASPECT_Y, BASE_OUTPUT_HEIGHT);
+			cropIntent.putExtra(CropImageActivity.EXTRA_MAX_X, OUTPUT_SCALE_FACTOR * BASE_OUTPUT_WIDTH);
+			cropIntent.putExtra(CropImageActivity.EXTRA_MAX_Y, OUTPUT_SCALE_FACTOR * BASE_OUTPUT_HEIGHT);
+			*/
+
+
 		if (extras != null) {
-			mAspectX = extras.getInt(EXTRA_ASPECT_X);
-			mAspectY = extras.getInt(EXTRA_ASPECT_Y);
-			mMaxX = extras.getInt(EXTRA_MAX_X);
-			mMaxY = extras.getInt(EXTRA_MAX_Y);
-			mSaveUri = extras.getParcelable(MediaStore.EXTRA_OUTPUT);
+			if(extras.getString(INTENT_SOURCE) != null)
+			{
+				mAspectX = extras.getInt(EXTRA_ASPECT_X);
+				mAspectY = extras.getInt(EXTRA_ASPECT_Y);
+				mMaxX = extras.getInt(EXTRA_MAX_X);
+				mMaxY = extras.getInt(EXTRA_MAX_Y);
+				mSaveUri = extras.getParcelable(MediaStore.EXTRA_OUTPUT);
+			}
+			else
+			{
+				mAspectX = BASE_OUTPUT_WIDTH;
+				mAspectY = BASE_OUTPUT_HEIGHT;
+				mMaxX = OUTPUT_SCALE_FACTOR * BASE_OUTPUT_WIDTH;
+				mMaxY = OUTPUT_SCALE_FACTOR * BASE_OUTPUT_HEIGHT;
+				try
+				{
+					mSaveUri = ImageUtils.createTemporaryImageFile(getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+
+			}
 		}
+//		ClipData testinen = intent.getClipData();
+//		testinen.getItemAt(0).getUri()
 
 		mSourceUri = intent.getData();
+
+		if(mSourceUri == null)
+			mSourceUri = intent.getClipData().getItemAt(0).getUri();
+
 		if (mSourceUri != null) {
 			try {
 				mExifRotation = CropUtil.getExifRotation(CropUtil.getFromMediaUri(getContentResolver(), mSourceUri));

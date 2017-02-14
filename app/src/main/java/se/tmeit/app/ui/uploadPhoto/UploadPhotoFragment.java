@@ -29,10 +29,8 @@ public final class UploadPhotoFragment extends Fragment implements MainActivity.
 	private static final int ACTIVITY_RESULT_CROPPED_PHOTO = 13;
 	private static final int ACTIVITY_RESULT_SELECT_EXISTING = 12;
 	private static final int ACTIVITY_RESULT_TAKE_PHOTO = 11;
-	private static final int BASE_OUTPUT_HEIGHT = 120;
-	private static final int BASE_OUTPUT_WIDTH = 110;
+	private static final String FRAGMENT_NAME = "UploadPhotoFragment";
 	private static final String IMAGES_TYPE = "image/*";
-	private static final int OUTPUT_SCALE_FACTOR = 4;
 	private static final String STATE_PENDING_IMAGE_CAPTURE_URI = "uploadPhotoPendingCaptureUri";
 	private static final String STATE_PENDING_IMAGE_CROP_URI = "uploadPhotoPendingCropUri";
 	private static final String TAG = UploadPhotoFragment.class.getSimpleName();
@@ -160,10 +158,11 @@ public final class UploadPhotoFragment extends Fragment implements MainActivity.
 			Intent cropIntent = new Intent(getContext(), CropImageActivity.class);
 			cropIntent.setData(sourceUri);
 			cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPendingCropUri);
-			cropIntent.putExtra(CropImageActivity.EXTRA_ASPECT_X, BASE_OUTPUT_WIDTH);
-			cropIntent.putExtra(CropImageActivity.EXTRA_ASPECT_Y, BASE_OUTPUT_HEIGHT);
-			cropIntent.putExtra(CropImageActivity.EXTRA_MAX_X, OUTPUT_SCALE_FACTOR * BASE_OUTPUT_WIDTH);
-			cropIntent.putExtra(CropImageActivity.EXTRA_MAX_Y, OUTPUT_SCALE_FACTOR * BASE_OUTPUT_HEIGHT);
+			cropIntent.putExtra(CropImageActivity.EXTRA_ASPECT_X, CropImageActivity.BASE_OUTPUT_WIDTH);
+			cropIntent.putExtra(CropImageActivity.EXTRA_ASPECT_Y, CropImageActivity.BASE_OUTPUT_HEIGHT);
+			cropIntent.putExtra(CropImageActivity.EXTRA_MAX_X, CropImageActivity.OUTPUT_SCALE_FACTOR * CropImageActivity.BASE_OUTPUT_WIDTH);
+			cropIntent.putExtra(CropImageActivity.EXTRA_MAX_Y, CropImageActivity.OUTPUT_SCALE_FACTOR * CropImageActivity.BASE_OUTPUT_HEIGHT);
+			cropIntent.putExtra(CropImageActivity.INTENT_SOURCE, FRAGMENT_NAME);
 			startActivityForResult(cropIntent, ACTIVITY_RESULT_CROPPED_PHOTO);
 		} catch (Exception ex) {
 			ImageUtils.safelyDeleteTemporaryFile(mPendingCropUri);
