@@ -23,6 +23,8 @@ import se.tmeit.app.ui.cropPhoto.CropImageActivity;
 import se.tmeit.app.utils.ImageUtils;
 
 
+import static android.content.Intent.FLAG_ACTIVITY_NO_HISTORY;
+
 
 /**
  * Fragment which allows the user to take/select a photo and upload it.
@@ -178,6 +180,7 @@ public final class UploadPhotoFragment extends Fragment implements MainActivity.
 			cropIntent.putExtra(CropImageActivity.EXTRA_ASPECT_Y, BASE_OUTPUT_HEIGHT);
 			cropIntent.putExtra(CropImageActivity.EXTRA_MAX_X, OUTPUT_SCALE_FACTOR * BASE_OUTPUT_WIDTH);
 			cropIntent.putExtra(CropImageActivity.EXTRA_MAX_Y, OUTPUT_SCALE_FACTOR * BASE_OUTPUT_HEIGHT);
+			cropIntent.addFlags(FLAG_ACTIVITY_NO_HISTORY);
 			startActivityForResult(cropIntent, ACTIVITY_RESULT_CROPPED_PHOTO);
 		} catch (Exception ex) {
 			ImageUtils.safelyDeleteTemporaryFile(mPendingCropUri);
