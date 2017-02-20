@@ -25,6 +25,7 @@ import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -221,14 +222,20 @@ public final class NotificationManager {
         return style;
     }
 
-    private Calendar getTimeOfLatestNotification() {
-        Calendar lastNotif = mPrefs.getLatestNotification();
-        if (null == lastNotif) {
-            lastNotif = GregorianCalendar.getInstance();
-            lastNotif.set(2000, 1, 1, 0, 0, 0); // set a date far in the past, so we'll get all notifications
-        }
-        return lastNotif;
-    }
+	private Calendar getTimeOfLatestNotification() {
+		Calendar lastNotif = mPrefs.getLatestNotification();
+		if (null == lastNotif) {
+			lastNotif = GregorianCalendar.getInstance();
+			lastNotif.setTime(new Date());
+			lastNotif.roll(GregorianCalendar.MONTH, -1);
+			int month = lastNotif.get(GregorianCalendar.MONTH);
+			if(month == 11)
+			{
+				lastNotif.roll(GregorianCalendar.YEAR, -1);
+			}
+		}
+		return lastNotif;
+	}
 
     private void handleNotifications(JSONArray jsonArray) {
         Calendar lastNotif = getTimeOfLatestNotification();
